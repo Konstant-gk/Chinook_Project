@@ -1,0 +1,2 @@
+USE Chinook2022
+SELECT * FROM dim.customers
