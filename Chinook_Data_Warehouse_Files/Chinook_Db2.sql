@@ -18,6 +18,7 @@
    Create Tables
 ********************************************************************************/
 CREATE DATABASE Chinook;
+GO
 USE Chinook; 
 
 CREATE TABLE "Album"
