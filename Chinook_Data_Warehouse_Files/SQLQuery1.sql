@@ -46,12 +46,32 @@ CREATE TABLE DimTrack (
    TrackName NVARCHAR(200)
 );
 
+CREATE TABLE DimEmployee
+(
+    Employeekey INT NOT NULL PRIMARY KEY,
+    EmployeeId INT NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    FirstName VARCHAR(20) NOT NULL,
+    Title VARCHAR(30),
+    ReportsTo INT,
+    BirthDate DATE,
+    HireDate DATE,
+    Address VARCHAR(70),
+    City VARCHAR(40),
+    State VARCHAR(40),
+    Country VARCHAR(40),
+    PostalCode VARCHAR(10),
+    Phone VARCHAR(24),
+    Fax VARCHAR(24),
+    Email VARCHAR(60),
+);
+
 CREATE TABLE FactInvoiceLine (
        Customerkey INT NOT NULL,
        Artistkey INT NOT NULL,
        Albumkey INT NOT NULL,
        Trackkey INT NOT NULL,
-      
+       Employeekey INT NOT NULL,
        InvoiceLineId INT NOT NULL,
        UnitPrice NUMERIC(10,2) NOT NULL,
        Quantity INT NOT NULL,
