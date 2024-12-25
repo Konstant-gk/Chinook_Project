@@ -1,0 +1,13 @@
+BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email
+
+
+CustomerId, FirstName, LastName, Company, Address, City, State, Country, PostalCode, Phone, Fax, Email, SupportRepId
+
+AlbumId, Title, ArtistId
+
+InvoiceId, CustomerId, InvoiceDate, BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode, Total
+
+InvoiceLineId, InvoiceId, TrackId, UnitPrice, Quantity,
+
+TrackId, Name, AlbumId, MediaTypeId, GenreId, Composer, Milliseconds, Bytes,UnitPrice,
+
