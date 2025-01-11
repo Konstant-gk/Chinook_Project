@@ -4,10 +4,10 @@ GO
 
 ALTER DATABASE [ChinookStaging] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 drop database if exists [ChinookStaging];
-
+GO
 
 create database [ChinookStaging];
-
+GO
 
 
 use [ChinookStaging];
