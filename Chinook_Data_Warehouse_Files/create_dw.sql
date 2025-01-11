@@ -1,16 +1,16 @@
 USE MASTER
 GO
 
-BEGIN
-DROP DATABASE IF EXISTS [Chinook-DW]
-END
+ALTER DATABASE [ChinookDW] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+DROP DATABASE IF EXISTS [ChinookDW];
+GO
 
-CREATE DATABASE [Chinook-DW]
+CREATE DATABASE [ChinookDW];
 
 GO
 
 
-use [Chinook-DW]
+use [ChinookDW];
 GO
 
 
@@ -35,29 +35,29 @@ create table DimEmployee(
 create table DimCustomer (
 	CustomerId INT NOT NULL,
     CustomerName VARCHAR(40) NOT NULL,
-    CustomerCompany VARCHAR(40) NOT NULL,
+    CustomerCompany VARCHAR(150) NOT NULL,
 	CustomerCountry VARCHAR(15) NOT NULL,
 	CustomerState VARCHAR(15) DEFAULT 'N/A' NOT NULL,
-	CustomerCity VARCHAR(15) NOT NULL,
+	CustomerCity VARCHAR(40) NOT NULL,
 	CustomerPostalCode VARCHAR(10) NOT NULL,
     CustomerPhone VARCHAR(24) NOT NULL,
     CustomerSupportRepId INT NOT NULL, --Checked for null values in staging and there are none
 	CONSTRAINT PK_CustomerId PRIMARY KEY CLUSTERED (CustomerId),
-    CONSTRAINT FK_SupportRepId FOREIGN KEY (CustomerSupportRepId) REFERENCES DimEmployee(EmployeeId)
+    --CONSTRAINT FK_SupportRepId FOREIGN KEY (CustomerSupportRepId) REFERENCES DimEmployee(EmployeeId)
 );
 
 
 create table DimTrack
 (
 	TrackId INT NOT NULL,
-	TrackName VARCHAR(40) NOT NULL,
+	TrackName VARCHAR(150) NOT NULL,
 	AlbumId INT NOT NULL, --Checked NOT NULL everywhere
-	AlbumName VARCHAR(40) NOT NULL,
+	AlbumName VARCHAR(150) NOT NULL,
 	ArtistId INT NOT NULL,
-	ArtistName VARCHAR(40) NOT NULL,
+	ArtistName VARCHAR(150) NOT NULL,
 	GenreId INT NOT NULL,
 	GenreName VARCHAR(40) NOT NULL,
-	TrackComposer VARCHAR(40) DEFAULT 'N/A' NOT NULL, --We can drop this
+	TrackComposer VARCHAR(200) DEFAULT 'N/A' NOT NULL, --We can drop this
 	TrackMilliseconds INT NOT NULL,
 	TrackUnitPrice FLOAT NOT NULL,
 	TrackBytes INT NOT NULL,
@@ -77,11 +77,13 @@ create table FactInvoice(
 	InvoiceBillingCity VARCHAR(40) NOT NULL,
 	InvoiceBillingState VARCHAR(40) DEFAULT 'N/A',
 	InvoiceBillingCountry VARCHAR(40) NOT NULL,
+	InvoiceFullDate DATE NOT NULL,
 	Quantity SMALLINT NOT NULL, --Mostly 1?
 	ExtendedPriceAmount FLOAT NOT NULL, --Quantity * UnitPrice
 	--DiscountAmount FLOAT DEFAULT 0 NOT NULL, --Are there discounts?
 	UnitPrice FLOAT NOT NULL,
 	Total FLOAT NOT NULL, --Introduces redundancy!? The total of the invoice is repeated for every line of the invoice in the fact table. Maybe drop it? (loss of ready info)
+	CONSTRAINT PK_InvoiceLineID PRIMARY KEY CLUSTERED (InvoiceLineId)
 );
 
 --granularity -> InvoiceLine (track sales)
@@ -137,18 +139,19 @@ END;
 
 --add foreign key constraints to fact table
 
-ALTER TABLE FactInvoice 
+
+ALTER TABLE dbo.FactInvoice 
 	ADD CONSTRAINT FactInvoice_DimCustomer_CustomerId_fk
-		FOREIGN KEY (CustomerId) REFERENCES DimCustomer(CustomerId)
+		FOREIGN KEY (CustomerId) REFERENCES DimCustomer(CustomerId);
 
-ALTER TABLE FactInvoice 
+ALTER TABLE dbo.FactInvoice 
 	ADD CONSTRAINT FactInvoice_DimEmployee_EmployeeId_fk
-		FOREIGN KEY (EmployeeId) REFERENCES DimEmployee(EmployeeId)
+		FOREIGN KEY (EmployeeId) REFERENCES DimEmployee(EmployeeId);
 
-ALTER TABLE FactInvoice 
+ALTER TABLE dbo.FactInvoice 
 	ADD CONSTRAINT FactInvoice_DimDate_InvoiceDateKey_fk
-		FOREIGN KEY (InvoiceDateKey) REFERENCES DimDate(DateKey)
+		FOREIGN KEY (InvoiceDateKey) REFERENCES DimDate(DateKey);
 		
-ALTER TABLE FactInvoice 
+ALTER TABLE dbo.FactInvoice 
 	ADD CONSTRAINT FactInvoice_DimTrack_TrackId_fk
-		FOREIGN KEY (TrackId) REFERENCES DimTrack(TrackId)
+		FOREIGN KEY (TrackId) REFERENCES DimTrack(TrackId);

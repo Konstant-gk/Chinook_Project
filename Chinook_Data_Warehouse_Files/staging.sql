@@ -1,44 +1,46 @@
-use master
-go
+USE master
 --create db
+GO
 
-BEGIN
-ALTER DATABASE [Chinook-staging] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-drop database if exists [Chinook-staging]
-END
+ALTER DATABASE [ChinookStaging] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+drop database if exists [ChinookStaging];
 
-create database [Chinook-staging]
-use [Chinook-staging]
+
+create database [ChinookStaging];
+
+
+
+use [ChinookStaging];
 GO
 
 select 
-	a.TrackId, a.Name as Track, b.Title as  Album, b.AlbumId, c.Name as Artist,d.Name as Genre,a.GenreId, a.Composer, a.Milliseconds,a.UnitPrice, a.Bytes
+	a.TrackId, a.Name as Track, b.Title as  Album, b.AlbumId, c.ArtistId, c.Name as Artist,d.Name as Genre,a.GenreId, a.Composer, a.Milliseconds,a.UnitPrice, a.Bytes
 	into Tracks
 from Chinook.dbo.Track a 
 	inner join Chinook.dbo.Album b on a.AlbumId=b.AlbumId
 	inner join Chinook.dbo.Artist c on b.ArtistId = c.ArtistId
-	inner join Chinook.dbo.Genre d on a.GenreId = d.GenreId
+	inner join Chinook.dbo.Genre d on a.GenreId = d.GenreId;
 	
 
 select 
-	a.InvoiceLineId, a.TrackId, a.UnitPrice, a.Quantity, b.*
+	*
 	into InvoiceLines
-from Chinook.dbo.InvoiceLine a inner join Chinook.dbo.Invoice b on a.InvoiceId = b.InvoiceId
+from Chinook.dbo.InvoiceLine ;
 
 
 
 select 
 	*
 	into Invoices
-from Chinook.dbo.Invoice
+from Chinook.dbo.Invoice;
 
 
 select 
 *
 into Employees
-from Chinook.dbo.Employee
+from Chinook.dbo.Employee;
 
 select 
 *
 into Customers
-from Chinook.dbo.Customer
+from Chinook.dbo.Customer;
