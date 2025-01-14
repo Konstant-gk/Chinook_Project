@@ -54,7 +54,8 @@ CREATE TABLE Dim_Customer (
 	Customer_Fax NVARCHAR(15) DEFAULT 'NA' NOT NULL,
 	Customer_Email VARCHAR(50) NOT NULL,
 	Customer_Support_Rep_Id INT NOT NULL,
-	CONSTRAINT PK_Customer_Id PRIMARY KEY CLUSTERED (Customer_Id)
+	CONSTRAINT PK_Customer_Id PRIMARY KEY CLUSTERED (Customer_Id),
+	CONSTRAINT UQ_Customer_Support_Rep_Id UNIQUE (Customer_Support_Rep_Id)
 );
 
 -- Dim_Sales_Info dimension will need to include:
@@ -71,7 +72,7 @@ CREATE TABLE Dim_Sales_Info (
 
 -- Dim_Date dimension will need to include:
 CREATE TABLE Dim_Date (
-    Date_Id INT PRIMARY KEY,
+    Date_Id INT NOT NULL,
     Full_Date DATE NOT NULL,
 	Quarter INT NOT NULL,
     Year INT NOT NULL,
@@ -90,8 +91,8 @@ CREATE TABLE Dim_Product_Music (
 	Track_Id INT NOT NULL,
 	Track_Name VARCHAR(150) NOT NULL,
 	Track_Composer VARCHAR(200) DEFAULT 'NA' NOT NULL,
-	Track_Miliseconds INT NOT NULL,,
-	Track_Bytes INT NOT NULL,,
+	Track_Miliseconds INT NOT NULL,
+	Track_Bytes INT NOT NULL,
 	Track_Unit_Price FLOAT NOT NULL,
 	Album_Id INT NOT NULL,
 	Album_Title VARCHAR(150) NOT NULL,
@@ -122,16 +123,16 @@ CREATE TABLE Fact_Sales(
 	Quantity SMALLINT NOT NULL,
 	Discount_Amount FLOAT DEFAULT 0 NOT NULL,
 	CONSTRAINT PK_Invoice_Id PRIMARY KEY CLUSTERED (Invoice_Id)
-
+	);
 --Specify Start Date and End date here
 --Value of Start Date Must be Less than Your End Date
 
-DECLARE @StartDate DATETIME = '2005-01-01' --Starting value of Date Range
+DECLARE @CurrentDate DATETIME = '2005-01-01' --Starting value of Date Range
 DECLARE @EndDate DATETIME = '2021-12-31' --End Value of Date Range
 
 WHILE @CurrentDate <= @EndDate
 BEGIN
-    INSERT INTO DimDate (Date_Id, Full_Date, Year, Quarter, Month, MonthName, Week, Day, DayName)
+    INSERT INTO Dim_Date (Date_Id, Full_Date, Year, Quarter, Month, MonthName, Week, Day, DayName)
     VALUES (
         CONVERT(INT, FORMAT(@CurrentDate, 'yyyyMMdd')), -- Dateid
         @CurrentDate,                                  -- FullDate
@@ -141,7 +142,7 @@ BEGIN
         DATENAME(MONTH, @CurrentDate),                 -- MonthName
         DATEPART(WEEK, @CurrentDate),                  -- Week
         DAY(@CurrentDate),                             -- Day
-        DATENAME(WEEKDAY, @CurrentDate),               -- DayName
+        DATENAME(WEEKDAY, @CurrentDate)               -- DayName
     );
 
     SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate);
@@ -150,33 +151,24 @@ END;
 
 --add foreign key to fact_sales table
 
-ALTER TABLE Fact_Sales ADD FOREIGN KEY (Date_Id)
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimDate_DateId_FK FOREIGN KEY (Date_Id)
     REFERENCES Dim_Date(Date_Id);
 
-ALTER TABLE Fact_Sales ADD FOREIGN KEY (Invoice_Line_Id)
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimSalesInfo_InvoiceLineId_FK FOREIGN KEY (Invoice_Line_Id)
     REFERENCES Dim_Sales_Info (Invoice_Line_Id);
 
-ALTER TABLE Fact_Sales ADD FOREIGN KEY (Employee_Id)
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimCustomer_CustomerSupportRepId_FK FOREIGN KEY (Employee_Id)
     REFERENCES Dim_Customer (Customer_Support_Rep_Id);
 
-ALTER TABLE Fact_Sales ADD FOREIGN KEY (Customer_Id)
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimCustomer_CustomerId_FK FOREIGN KEY (Customer_Id)
     REFERENCES Dim_Customer (Customer_Id);
 
-ALTER TABLE Fact_Sales ADD FOREIGN KEY (Employee_Id)
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimEmployee_EmployeeId_FK FOREIGN KEY (Employee_Id)
     REFERENCES Dim_Employee (Employee_Id);
 
-ALTER TABLE Fact_Sales ADD FOREIGN KEY (Track_Id)
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimProductMusic_TrackId_FK FOREIGN KEY (Track_Id)
     REFERENCES Dim_Product_Music (Track_Id);
 
 
-
-	FOREIGN KEY (Customer_Id) REFERENCES Dim_Customer (Customer_Id),
-	FOREIGN KEY (Employee_Id) REFERENCES Dim_Employee (Employee_Id),
-	FOREIGN KEY (Date_Id) REFERENCES Dim_Date (Date_Id),
-	FOREIGN KEY (Track_Id) REFERENCES Dim_Product (Track_Id),
-	FOREIGN KEY (Invoice_Line_Id) REFERENCES Dim_Sales_Info (Invoice_Line_Id)
-);
-
-
-
+SELECT * FROM Dim_Customer
 
