@@ -1,21 +1,22 @@
 USE ChinookDW;
 GO
 
+
+
+--Drop constraints and recreate them after
+ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimDate_DateKey_FK;
+ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimProductMusic_TrackKey_FK;
+ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimEmployee_EmployeeKey_FK;
+ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimCustomer_CustomerKey_FK;
+ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimSalesInfo_InvoiceLineKey_FK;
+GO
+
 -- Only for the first load
 TRUNCATE TABLE dbo.Fact_Sales;
 TRUNCATE TABLE dbo.Dim_Product_Music;
 TRUNCATE TABLE dbo.Dim_Customer;
 TRUNCATE TABLE dbo.Dim_Employee;
 TRUNCATE TABLE dbo.Dim_Sales_Info;
-
-
---Drop constraints and recreate them after
-ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimDate_DateId_FK;
-ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimSalesInfo_InvoiceLineId_FK;
-ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimCustomer_CustomerSupportRepId_FK;
-ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimCustomer_CustomerId_FK;
-ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimEmployee_EmployeeId_FK;
-ALTER TABLE dbo.Fact_Sales DROP CONSTRAINT IF EXISTS FactSales_DimProductMusic_TrackId_FK;
 GO
 
 
@@ -31,11 +32,11 @@ INSERT INTO Dim_Sales_Info (
 SELECT 
 	b.[InvoiceLineId], 
 	a.[InvoiceId],
-	a.[BillingAddress],
-	a.[BillingState],
-	a.[BillingCity],
-	a.[BillingCountry],
-	a.[BillingPostalCode]
+	CASE WHEN a.[BillingAddress] IS NULL THEN 'N/A' ELSE a.[BillingAddress] END,
+	CASE WHEN a.[BillingState] IS NULL THEN 'N/A' ELSE a.[BillingState] END, 
+	CASE WHEN a.[BillingCity] IS NULL THEN 'N/A' ELSE a.[BillingCity] END,
+	CASE WHEN a.[BillingCountry] IS NULL THEN 'N/A' ELSE a.[BillingCountry] END,
+	CASE WHEN a.[BillingPostalCode] IS NULL THEN 'N/A' ELSE a.[BillingPostalCode] END
 FROM [ChinookStaging].[dbo].[Invoice] a
 	INNER JOIN [ChinookStaging].[dbo].[Invoice_Line] b ON a.InvoiceId = b.InvoiceId;
 
@@ -66,12 +67,12 @@ SELECT
     CASE WHEN [ReportsTo] IS NULL THEN 0 ELSE [ReportsTo] END,
 	CASE WHEN [Address] IS NULL THEN 'N/A' ELSE [Address] END,
     CASE WHEN [City] IS NULL THEN 'N/A' ELSE [City] END,
-    CASE WHEN [State] IS NULL THEN 'N/A' ELSE [STATE] END, 
+    CASE WHEN [State] IS NULL THEN 'N/A' ELSE [State] END, 
     CASE WHEN [Country] IS NULL THEN 'N/A' ELSE [Country] END,
 	CASE WHEN [PostalCode] IS NULL THEN 'N/A' ELSE [PostalCode] END,
-	[Phone],
-	[Fax],
-	[Email],
+	CASE WHEN [Phone] IS NULL THEN 'N/A' ELSE [Phone] END,
+	CASE WHEN [Fax] IS NULL THEN 'N/A' ELSE [Fax] END,
+	CASE WHEN [Email] IS NULL THEN 'N/A' ELSE [Email] END,
 	[BirthDate],
 	[HireDate]
 FROM [ChinookStaging].[dbo].[Employee];
@@ -99,17 +100,17 @@ SELECT
 	CASE WHEN [Company] IS NULL THEN 'N/A' ELSE [Company] END,
 	CASE WHEN [Address] IS NULL THEN 'N/A' ELSE [Address] END,
 	CASE WHEN [City] IS NULL THEN 'N/A' ELSE [City] END,
-	CASE WHEN [State] IS NULL THEN 'N/A' ELSE [STATE] END, 
+	CASE WHEN [State] IS NULL THEN 'N/A' ELSE [State] END, 
     CASE WHEN [Country] IS NULL THEN 'N/A' ELSE [Country] END,
 	CASE WHEN [PostalCode] IS NULL THEN 'N/A' ELSE [PostalCode] END,
-	[Phone],
-	[Fax],
-	[Email],
+	CASE WHEN [Phone] IS NULL THEN 'N/A' ELSE [Phone] END,
+	CASE WHEN [Fax] IS NULL THEN 'N/A' ELSE [Fax] END,
+	CASE WHEN [Email] IS NULL THEN 'N/A' ELSE [Email] END,
 	[SupportRepId]
 FROM [ChinookStaging].[dbo].[Customer];
 
 
--- Load values to Dim_Product_Music
+-- Load values to Dim_Product_Music (different insert into due to lack of connecting joins
 INSERT INTO Dim_Product_Music(
 	[Track_Id],
 	[Track_Name],
@@ -121,77 +122,84 @@ INSERT INTO Dim_Product_Music(
 	[Album_Title],
 	[Artist_Id],
 	[Artist_Name],
-	[Playlist_Id],
-	[Playlist_Name],
 	[Media_Type_Id],
 	[Media_Type_Name],
 	[Genre_Id],
-	[Genre_Name]
-SELECT 
+	[Genre_Name])
+SELECT
 	a.[TrackId], 
 	a.[Name], 
-	a.[Composer],
+	CASE WHEN a.[Composer] IS NULL THEN 'N/A' ELSE a.[Composer] END,
 	a.[Milliseconds],
 	a.[Bytes],
 	a.[UnitPrice],
-	a.[AlbumId],
+	b.[AlbumId],
 	b.[Title],
-	b.[ArtistId],
-	--c.[Name],
-	d.[PlaylistId],
-	--d.[Name],
-	a.[MediaTypeId],
-	e.[Name],
-	a.[GenreId],
-	f.[Name]
-
+	c.[ArtistId],
+	c.[Name],
+	f.[MediaTypeId],
+	f.[Name],
+	g.[GenreId],
+	g.[Name]
 FROM [ChinookStaging].[dbo].[Track] a
-	INNER JOIN [ChinookStaging].[dbo].[Album] b ON 
-	INNER JOIN [ChinookStaging].[dbo].[Playlist] ON
-	INNER JOIN [ChinookStaging].[dbo].[Genre] ON
-	INNER JOIN [ChinookStaging].[dbo].[Media_Type] ON
-	INNER JOIN [ChinookStaging].[dbo].[Artist] ON
+	INNER JOIN [ChinookStaging].[dbo].[Album] b ON a.[AlbumId] = b.[AlbumId]
+	INNER JOIN [ChinookStaging].[dbo].[Artist] c ON b.[ArtistId] = c.[ArtistId]
+	INNER JOIN [ChinookStaging].[dbo].[Media_Type] f ON a.[MediaTypeId] = f.[MediaTypeId]
+	INNER JOIN [ChinookStaging].[dbo].[Genre] g ON a.[GenreId] = g.[GenreId];
+
 
 
 
 -- Load values to Fact_Sales
-INSERT INTO Fact_Sales([Invoice_Id], [Invoice_Line_Id], [Track_Id], [Unit_Price], [Quantity])
-SELECT [InvoiceId], [InvoiceLineId], [TrackId], [UnitPrice], [Quantity]
-FROM [ChinookStaging].[dbo].[Invoice_Line]
-
-INSERT INTO Fact_Sales([Customer_Id], [Invoice_Date], [Total])
-SELECT [CustomerId], [InvoiceDate], [Total]
-FROM [ChinookStaging].[dbo].[Invoice]
-
-INSERT INTO Fact_Sales([Employee_Id])
-SELECT [EmployeeID]
-FROM [ChinookStaging].[dbo].[Employee]
-
-
-INNER JOIN NorthwindDW.dbo.DimCustomer
-    ON NorthwindDW.dbo.DimCustomer.CustomerID=NorthwindStaging.dbo.Sales.CustomerId
-INNER JOIN NorthwindDW.dbo.DimEmployee
-    ON NorthwindDW.dbo.DimEmployee.EmployeeID=NorthwindStaging.dbo.Sales.EmployeeId
-INNER JOIN NorthwindDW.dbo.DimProduct
-    ON NorthwindDW.dbo.DimProduct.ProductID=NorthwindStaging.dbo.Sales.ProductID
+INSERT INTO Fact_Sales(
+	[Employee_Key],
+	[Customer_Key],
+	[Track_Key],
+	[Invoice_Line_Key],
+	[Date_Key],
+	[Invoice_Id],
+	[Invoice_Date],
+	[Quantity],
+	[Price],
+	[Total],
+	[Extended_Price_Amount])
+SELECT
+	g.[Employee_Key],
+	d.[Customer_Key],
+	e.[Track_Key],
+	f.[Invoice_Line_Key],
+	c.[Date_Key],
+	a.[InvoiceId],
+	a.[InvoiceDate],
+	b.[Quantity],
+	b.[UnitPrice],
+	a.[Total],
+	b.[Quantity] * b.[UnitPrice] AS [Extended_Price_Amount]
+FROM [ChinookStaging].[dbo].[Invoice] a
+	INNER JOIN [ChinookStaging].[dbo].[Invoice_Line] b ON a.[InvoiceId] = b.[InvoiceId]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Date] c ON a.[InvoiceDate] = c.[Full_Date]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Customer] d ON a.[CustomerId] = d.[Customer_Id]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Product_Music] e ON b.[TrackId] = e.[Track_Id]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Sales_Info] f ON b.[InvoiceLineId] = f.[Invoice_Line_Id]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Employee] g ON d.[Customer_Support_Rep_Id] = g.[Employee_Id];
 
 
 --recreate the constraints Foreign Keys
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimDate_DateKey_FK FOREIGN KEY (Date_Key)
+    REFERENCES Dim_Date(Date_Key);
 
-ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimDate_DateId_FK FOREIGN KEY (Date_Id)
-    REFERENCES Dim_Date(Date_Id);
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimSalesInfo_InvoiceLineKey_FK FOREIGN KEY (Invoice_Line_Key)
+    REFERENCES Dim_Sales_Info (Invoice_Line_Key);
 
-ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimSalesInfo_InvoiceLineId_FK FOREIGN KEY (Invoice_Line_Id)
-    REFERENCES Dim_Sales_Info (Invoice_Line_Id);
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimCustomer_CustomerKey_FK FOREIGN KEY (Customer_Key)
+    REFERENCES Dim_Customer (Customer_Key);
 
-ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimCustomer_CustomerSupportRepId_FK FOREIGN KEY (Employee_Id)
-    REFERENCES Dim_Customer (Customer_Support_Rep_Id);
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimEmployee_EmployeeKey_FK FOREIGN KEY (Employee_Key)
+    REFERENCES Dim_Employee (Employee_Key);
 
-ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimCustomer_CustomerId_FK FOREIGN KEY (Customer_Id)
-    REFERENCES Dim_Customer (Customer_Id);
+ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimProductMusic_TrackKey_FK FOREIGN KEY (Track_Key)
+    REFERENCES Dim_Product_Music (Track_Key);
 
-ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimEmployee_EmployeeId_FK FOREIGN KEY (Employee_Id)
-    REFERENCES Dim_Employee (Employee_Id);
 
-ALTER TABLE Fact_Sales ADD CONSTRAINT FactSales_DimProductMusic_TrackId_FK FOREIGN KEY (Track_Id)
-    REFERENCES Dim_Product_Music (Track_Id);
+
+SELECT * FROM [dbo].[Fact_Sales]
