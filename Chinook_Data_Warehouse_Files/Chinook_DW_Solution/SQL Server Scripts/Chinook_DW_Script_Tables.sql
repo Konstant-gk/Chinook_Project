@@ -101,6 +101,8 @@ CREATE TABLE Dim_Product_Music (
 	Album_Title VARCHAR(150) DEFAULT 'NA' NOT NULL,
 	Artist_Id INT NOT NULL,
 	Artist_Name VARCHAR(150) DEFAULT 'NA' NOT NULL,
+	Playlist_Id INT NOT NULL,
+	Playlist_Name VARCHAR(50) NOT NULL,
 	Media_Type_Id INT NOT NULL,
 	Media_Type_Name VARCHAR(60) DEFAULT 'NA' NOT NULL,
 	Genre_Id INT NOT NULL,
