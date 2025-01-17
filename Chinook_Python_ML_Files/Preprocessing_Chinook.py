@@ -8,4 +8,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-print("All libraries imported successfully!fdfv")
+
+print("All libraries imported successfully!")
+
+df = pd.read_csv('Query_Join_Tables_Chinook.csv')
