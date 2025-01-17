@@ -1,0 +1,46 @@
+﻿EmployeeId,Employee_LastName,Employee_FirstName,Employee_HireDate,ReportsTo,Employee_Role,BirthDate,Employee_Country,Employee_City,Total,TotalInvoices,TotalRevenue,AvgRevenue
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,13.86,17,235.62,13.860000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,13.86,17,235.62,13.860000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,13.86,15,207.90,13.860000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,8.91,19,169.29,8.910000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,8.91,19,169.29,8.910000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,8.91,16,142.56,8.910000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,5.94,21,124.74,5.940000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,5.94,20,118.80,5.940000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,5.94,15,89.10,5.940000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,3.96,20,79.20,3.960000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,1.98,38,75.24,1.980000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,3.96,19,75.24,3.960000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,1.98,37,73.26,1.980000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,1.98,36,71.28,1.980000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,3.96,18,71.28,3.960000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,21.86,2,43.72,21.860000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,18.86,2,37.72,18.860000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,25.86,1,25.86,25.860000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,23.86,1,23.86,23.860000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,0.99,19,18.81,0.990000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,17.91,1,17.91,17.910000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,0.99,18,17.82,0.990000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,0.99,18,17.82,0.990000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,16.86,1,16.86,16.860000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,16.86,1,16.86,16.860000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,7.96,2,15.92,7.960000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,15.86,1,15.86,15.860000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,15.86,1,15.86,15.860000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,14.91,1,14.91,14.910000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,3.98,3,11.94,3.980000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,11.94,1,11.94,11.940000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,10.91,1,10.91,10.910000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,10.91,1,10.91,10.910000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,9.91,1,9.91,9.910000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,8.94,1,8.94,8.940000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,3.98,2,7.96,3.980000
+5,Johnson,Steve,2003-10-17,2,Sales Support Agent,1965-03-03,Canada,Calgary,6.94,1,6.94,6.940000
+3,Peacock,Jane,2002-04-01,2,Sales Support Agent,1973-08-29,Canada,Calgary,1.99,3,5.97,1.990000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,2.98,1,2.98,2.980000
+4,Park,Margaret,2003-05-03,2,Sales Support Agent,1947-09-19,Canada,Calgary,1.99,1,1.99,1.990000
+1,Adams,Andrew,2002-08-14,NULL,General Manager,1962-02-18,Canada,Edmonton,NULL,0,NULL,NULL
+2,Edwards,Nancy,2002-05-01,1,Sales Manager,1958-12-08,Canada,Calgary,NULL,0,NULL,NULL
+6,Mitchell,Michael,2003-10-17,1,IT Manager,1973-07-01,Canada,Calgary,NULL,0,NULL,NULL
+7,King,Robert,2004-01-02,6,IT Staff,1970-05-29,Canada,Lethbridge,NULL,0,NULL,NULL
+8,Callahan,Laura,2004-03-04,6,IT Staff,1968-01-09,Canada,Lethbridge,NULL,0,NULL,NULL
