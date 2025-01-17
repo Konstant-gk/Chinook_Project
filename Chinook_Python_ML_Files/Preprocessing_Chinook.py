@@ -9,6 +9,9 @@ from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-print("All libraries imported successfully!")
+print("All libraries imported successfulhnrtdly!")
 
 df = pd.read_csv('Query_Join_Tables_Chinook.csv')
+
+df.fillna(0, inplace=True)
+print("f16")
