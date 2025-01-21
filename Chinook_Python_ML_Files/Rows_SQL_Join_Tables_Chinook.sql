@@ -15,11 +15,10 @@ SELECT
         END AS Employee_Age,
 	a.[ReportsTo],
 	a.[Title] AS Employee_Role,
-	a.[Country] AS Employee_Country,
+	b.[Country] AS Customer_Country,
 	b.[CustomerId],
 	b.[FirstName] + ' ' + b.[LastName] AS Customer_FullName,
 	d.[UnitPrice],
-	c.[Total],
     COUNT(c.[InvoiceId]) AS TotalInvoices,
     SUM(c.[Total]) AS TotalRevenue,
     AVG(c.[Total]) AS AvgRevenue
@@ -35,9 +34,8 @@ GROUP BY
 	a.[BirthDate],
 	a.[ReportsTo],
 	a.[Title],
-	a.[Country],
+	b.[Country],
 	b.[CustomerId],
 	b.[FirstName] + ' ' + b.[LastName],
-	d.[UnitPrice],
-	c.[Total]
+	d.[UnitPrice]
 ORDER BY [EmployeeId] ASC;
