@@ -22,9 +22,9 @@ create table DimEmployee(
 	EmployeeReportsTo INT NOT NULL, --  only 1 line (general manager) is NULL we will handle with insert query 
     EmployeeBirthDate DATE NOT NULL,
     EmployeeHireDate DATE NOT NULL,
-    EmployeeAddress VARCHAR(40) NOT NULL,
-    EmployeeCity VARCHAR(40) NOT NULL,
-    EmployeeState VARCHAR(15) DEFAULT 'NA' NOT NULL,
+    EmployeeAddress VARCHAR(40) DEFAULT 'N/A' NOT NULL,
+    EmployeeCity VARCHAR(40) DEFAULT 'N/A' NOT NULL,
+    EmployeeState VARCHAR(15) DEFAULT 'N/A' NOT NULL,
     EmployeePostalCode VARCHAR(15) NOT NULL,
     EmployeeEmail VARCHAR(40) NOT NULL,
     -- do we need anything more for employees?
@@ -35,12 +35,12 @@ create table DimEmployee(
 create table DimCustomer (
 	CustomerId INT NOT NULL,
     CustomerName VARCHAR(40) NOT NULL,
-    CustomerCompany VARCHAR(150) NOT NULL,
-	CustomerCountry VARCHAR(15) NOT NULL,
+    CustomerCompany VARCHAR(150) DEFAULT 'N/A'NOT NULL,
+	CustomerCountry VARCHAR(15) DEFAULT 'N/A' NOT NULL,
 	CustomerState VARCHAR(15) DEFAULT 'N/A' NOT NULL,
-	CustomerCity VARCHAR(40) NOT NULL,
-	CustomerPostalCode VARCHAR(10) NOT NULL,
-    CustomerPhone VARCHAR(24) NOT NULL,
+	CustomerCity VARCHAR(40) DEFAULT 'N/A' NOT NULL,
+	CustomerPostalCode VARCHAR(10) DEFAULT 'N/A' NOT NULL,
+    CustomerPhone VARCHAR(24) DEFAULT 'N/A' NOT NULL,
     CustomerSupportRepId INT NOT NULL, --Checked for null values in staging and there are none
 	CONSTRAINT PK_CustomerId PRIMARY KEY CLUSTERED (CustomerId),
     --CONSTRAINT FK_SupportRepId FOREIGN KEY (CustomerSupportRepId) REFERENCES DimEmployee(EmployeeId)
