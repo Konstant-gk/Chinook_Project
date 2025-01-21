@@ -13,7 +13,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
 
 
-df = pd.read_csv('Rows_Query_Join_Tables_Chinook.csv')
+df = pd.read_csv('Chinook_Employee_Joins_Aggregated_Nums.csv')
 print(df)
 print("\n")
 print(df.columns)
@@ -38,6 +38,9 @@ df['Tenure'] = (current_date - df['Employee_HireDate']).dt.days / 365
 
 # Display the dataset with the new 'Tenure' column
 print(df[['Employee_HireDate', 'Tenure']].head())
+
+print("\n")
+print(df.groupby('Employee_Age')['TotalInvoices'].median())
 
 # df['PerformanceCategory'] = pd.qcut(
 #     df['TotalRevenue'],
