@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<BuildLog xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ProjectInfo>
-    <Name>SSIS-project</Name>
-    <LastWriteTime>2024-12-18T14:58:34.0066975Z</LastWriteTime>
-    <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
-  </ProjectInfo>
-  <LastBuildInfos />
-</BuildLog>
