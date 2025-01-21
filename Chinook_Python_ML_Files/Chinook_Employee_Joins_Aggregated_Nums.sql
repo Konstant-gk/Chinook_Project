@@ -31,4 +31,4 @@ GROUP BY
 	a.[BirthDate],
 	a.[ReportsTo],
 	a.[Title]
-ORDER BY a.[EmployeeId] ASC;
+ORDER BY a.[TotalRevenue] DESC;
