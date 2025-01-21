@@ -101,8 +101,6 @@ CREATE TABLE Dim_Product_Music (
 	Album_Title VARCHAR(150) DEFAULT 'NA' NOT NULL,
 	Artist_Id INT NOT NULL,
 	Artist_Name VARCHAR(150) DEFAULT 'NA' NOT NULL,
-	Playlist_Id INT NOT NULL,
-	Playlist_Name VARCHAR(50) NOT NULL,
 	Media_Type_Id INT NOT NULL,
 	Media_Type_Name VARCHAR(60) DEFAULT 'NA' NOT NULL,
 	Genre_Id INT NOT NULL,
@@ -113,12 +111,12 @@ CREATE TABLE Dim_Product_Music (
 
 -- Fact_Sales dimension will need to include:
 CREATE TABLE Fact_Sales(
+	Invoice_Line_Key INT NOT NULL,
+	Invoice_Id INT NOT NULL,
+	Track_Key INT NOT NULL,
 	Employee_Key INT NOT NULL,
 	Customer_Key INT NOT NULL,
-	Track_Key INT NOT NULL,
-	Invoice_Line_Key INT NOT NULL,
 	Date_Key INT NOT NULL,
-	Invoice_Id INT NOT NULL,
 	Invoice_Date DATE NOT NULL,
 	Quantity SMALLINT NOT NULL,
 	Price FLOAT NOT NULL,
@@ -130,7 +128,7 @@ CREATE TABLE Fact_Sales(
 --Value of Start Date Must be Less than Your End Date
 
 DECLARE @CurrentDate DATETIME = '2005-01-01' --Starting value of Date Range
-DECLARE @EndDate DATETIME = '2025-12-31' --End Value of Date Range
+DECLARE @EndDate DATETIME = '2030-12-31' --End Value of Date Range
 
 WHILE @CurrentDate <= @EndDate
 BEGIN
