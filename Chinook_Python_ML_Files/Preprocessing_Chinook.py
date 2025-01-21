@@ -14,7 +14,7 @@ from sklearn.model_selection import GridSearchCV
 
 
 df = pd.read_csv('Chinook_Employee_Joins_Aggregated_Nums.csv')
-print(df)
+df.fillna(0, inplace=True)
 print("\n")
 print(df.columns)
 print("\n")
@@ -25,8 +25,8 @@ print("\n")
 plt.hist(df['Employee_Age'], bins=20)
 print(df['TotalRevenue'].describe())
 print("\n")
-df.fillna(0, inplace=True)
-
+print(df)
+print("\n")
 # Convert 'Employee_HireDate' to a datetime object
 df['Employee_HireDate'] = pd.to_datetime(df['Employee_HireDate'])
 
@@ -41,6 +41,8 @@ print(df[['Employee_HireDate', 'Tenure']].head())
 
 print("\n")
 print(df.groupby('Employee_Age')['TotalInvoices'].median())
+print("\n")
+print(df.groupby('Sex')['TotalRevenue'].median())
 
 # df['PerformanceCategory'] = pd.qcut(
 #     df['TotalRevenue'],
