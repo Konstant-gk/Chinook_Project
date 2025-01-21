@@ -27,6 +27,7 @@ print(df['TotalRevenue'].describe())
 print("\n")
 print(df)
 print("\n")
+print(df['Employee_FirstName'].value_counts())
 # Convert 'Employee_HireDate' to a datetime object
 df['Employee_HireDate'] = pd.to_datetime(df['Employee_HireDate'])
 
@@ -43,6 +44,7 @@ print("\n")
 print(df.groupby('Employee_Age')['TotalInvoices'].median())
 print("\n")
 print(df.groupby('Sex')['TotalRevenue'].median())
+print(df['Employee_FirstName'].value_counts())
 
 # df['PerformanceCategory'] = pd.qcut(
 #     df['TotalRevenue'],
