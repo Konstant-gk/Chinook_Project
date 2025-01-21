@@ -14,36 +14,23 @@ from sklearn.model_selection import GridSearchCV
 
 
 df = pd.read_csv('Chinook_Employee_Joins_Aggregated_Nums.csv')
-df.fillna(0, inplace=True)
-print("\n")
-print(df.columns)
-print("\n")
-print(df['Employee_Age'].value_counts())
-print("\n")
-print(df['Employee_Role'].value_counts())
-print("\n")
-plt.hist(df['Employee_Age'], bins=20)
-print(df['TotalRevenue'].describe())
-print("\n")
-print(df)
-print("\n")
-print(df['Employee_FirstName'].value_counts())
-# Convert 'Employee_HireDate' to a datetime object
-df['Employee_HireDate'] = pd.to_datetime(df['Employee_HireDate'])
+df.fillna(0, inplace=True),"\n"
+print(df.columns,"\n")
+print(df['Employee_Age'].value_counts(),"\n")
+print(df['Employee_Role'].value_counts(),"\n")
+plt.hist(df['Employee_Age'], bins=20),"\n"
+print(df['TotalRevenue'].describe(),"\n")
+print(df,"\n")
+print(df['Employee_FirstName'].value_counts(),"\n")
 
-# Define the current date (use today's date or a specific date)
-current_date = pd.Timestamp.now()
+df['Employee_HireDate'] = pd.to_datetime(df['Employee_HireDate'])       # Convert 'Employee_HireDate' to a datetime object
+current_date = pd.Timestamp.now()                                       # Define the current date (use today's date or a specific date)
+df['Tenure'] = (current_date - df['Employee_HireDate']).dt.days / 365   # Calculate tenure in years
+print(df[['Employee_HireDate', 'Tenure']].head(),"\n")                  # Display the dataset with the new 'Tenure' column
 
-# Calculate tenure in years
-df['Tenure'] = (current_date - df['Employee_HireDate']).dt.days / 365
-
-# Display the dataset with the new 'Tenure' column
-print(df[['Employee_HireDate', 'Tenure']].head(),"\n")
-print(df.groupby('Employee_Age')['TotalInvoices'].median())
-print("\n")
-print(df.groupby('Sex')['TotalRevenue'].median())
-print(df['Employee_FirstName'].value_counts())
-print(14)
+print(df.groupby('Employee_Age')['TotalInvoices'].median(),"\n")
+print(df.groupby('Sex')['TotalRevenue'].median(),"\n")
+print(df['Employee_FirstName'].value_counts(),"\n")
 
 # df['PerformanceCategory'] = pd.qcut(
 #     df['TotalRevenue'],
