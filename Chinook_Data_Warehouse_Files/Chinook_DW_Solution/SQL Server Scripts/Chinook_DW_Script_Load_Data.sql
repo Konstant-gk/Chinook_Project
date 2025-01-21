@@ -122,8 +122,8 @@ INSERT INTO Dim_Product_Music(
 	[Album_Title],
 	[Artist_Id],
 	[Artist_Name],
-	[Playlist_Id],
-	[Playlist_Name],
+	--[Playlist_Id],
+	--[Playlist_Name],
 	[Media_Type_Id],
 	[Media_Type_Name],
 	[Genre_Id],
@@ -139,8 +139,8 @@ SELECT
 	b.[Title],
 	c.[ArtistId],
 	c.[Name],
-	d.[PlaylistId],
-	e.[Name],
+	--d.[PlaylistId],
+	--e.[Name],
 	f.[MediaTypeId],
 	f.[Name],
 	g.[GenreId],
@@ -148,8 +148,8 @@ SELECT
 FROM [ChinookStaging].[dbo].[Track] a
 	INNER JOIN [ChinookStaging].[dbo].[Album] b ON a.[AlbumId] = b.[AlbumId]
 	INNER JOIN [ChinookStaging].[dbo].[Artist] c ON b.[ArtistId] = c.[ArtistId]
-	INNER JOIN [ChinookStaging].[dbo].[Playlist_Track] d ON a.[TrackId] = d.[TrackId]
-	INNER JOIN [ChinookStaging].[dbo].[Playlist] e ON e.[PlaylistId] = d.[PlaylistId]
+	--INNER JOIN [ChinookStaging].[dbo].[Playlist_Track] d ON a.[TrackId] = d.[TrackId]
+	--INNER JOIN [ChinookStaging].[dbo].[Playlist] e ON e.[PlaylistId] = d.[PlaylistId]
 	INNER JOIN [ChinookStaging].[dbo].[Media_Type] f ON a.[MediaTypeId] = f.[MediaTypeId]
 	INNER JOIN [ChinookStaging].[dbo].[Genre] g ON a.[GenreId] = g.[GenreId];
 
@@ -158,35 +158,35 @@ FROM [ChinookStaging].[dbo].[Track] a
 
 -- Load values to Fact_Sales
 INSERT INTO Fact_Sales(
+	[Invoice_Line_Key],
+	[Invoice_Id],
+	[Track_Key],
 	[Employee_Key],
 	[Customer_Key],
-	[Track_Key],
-	[Invoice_Line_Key],
 	[Date_Key],
-	[Invoice_Id],
 	[Invoice_Date],
 	[Quantity],
 	[Price],
 	[Total],
 	[Extended_Price_Amount])
 SELECT
+	f.[Invoice_Line_Key],
+	b.[InvoiceId],
+	e.[Track_Key],
 	g.[Employee_Key],
 	d.[Customer_Key],
-	e.[Track_Key],
-	f.[Invoice_Line_Key],
 	c.[Date_Key],
-	a.[InvoiceId],
-	a.[InvoiceDate],
-	b.[Quantity],
-	b.[UnitPrice],
-	a.[Total],
-	b.[Quantity] * b.[UnitPrice] AS [Extended_Price_Amount]
-FROM [ChinookStaging].[dbo].[Invoice] a
-	INNER JOIN [ChinookStaging].[dbo].[Invoice_Line] b ON a.[InvoiceId] = b.[InvoiceId]
-	INNER JOIN [ChinookDW].[dbo].[Dim_Date] c ON a.[InvoiceDate] = c.[Full_Date]
-	INNER JOIN [ChinookDW].[dbo].[Dim_Customer] d ON a.[CustomerId] = d.[Customer_Id]
-	INNER JOIN [ChinookDW].[dbo].[Dim_Product_Music] e ON b.[TrackId] = e.[Track_Id]
-	INNER JOIN [ChinookDW].[dbo].[Dim_Sales_Info] f ON b.[InvoiceLineId] = f.[Invoice_Line_Id]
+	b.[InvoiceDate],
+	a.[Quantity],
+	a.[UnitPrice],
+	b.[Total],
+	a.[Quantity] * a.[UnitPrice] AS [Extended_Price_Amount]
+FROM [ChinookStaging].[dbo].[Invoice_Line] a
+	INNER JOIN [ChinookStaging].[dbo].[Invoice] b ON a.[InvoiceId] = b.[InvoiceId]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Date] c ON b.[InvoiceDate] = c.[Full_Date]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Customer] d ON b.[CustomerId] = d.[Customer_Id]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Product_Music] e ON a.[TrackId] = e.[Track_Id]
+	INNER JOIN [ChinookDW].[dbo].[Dim_Sales_Info] f ON a.[InvoiceLineId] = f.[Invoice_Line_Id]
 	INNER JOIN [ChinookDW].[dbo].[Dim_Employee] g ON d.[Customer_Support_Rep_Id] = g.[Employee_Id];
 
 
