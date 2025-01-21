@@ -38,13 +38,12 @@ current_date = pd.Timestamp.now()
 df['Tenure'] = (current_date - df['Employee_HireDate']).dt.days / 365
 
 # Display the dataset with the new 'Tenure' column
-print(df[['Employee_HireDate', 'Tenure']].head())
-
-print("\n")
+print(df[['Employee_HireDate', 'Tenure']].head(),"\n")
 print(df.groupby('Employee_Age')['TotalInvoices'].median())
 print("\n")
 print(df.groupby('Sex')['TotalRevenue'].median())
 print(df['Employee_FirstName'].value_counts())
+print(14)
 
 # df['PerformanceCategory'] = pd.qcut(
 #     df['TotalRevenue'],
