@@ -31,6 +31,7 @@ print(df.groupby('Employee_Age')['TotalInvoices'].median(),"\n")
 print(df.groupby('Sex')['TotalRevenue'].median(),"\n")
 df['TotalRevenue'] = df['TotalRevenue'].fillna(df.groupby('Sex')['TotalRevenue'].transform('min'))
 df['AvgRevenue'] = df['AvgRevenue'].fillna(df.groupby('Sex')['AvgRevenue'].transform('min'))
+df['TotalInvoices'] = df['TotalInvoices'].fillna(df.groupby('Sex')['TotalInvoices'].transform('min'))
 print(df['TotalRevenue'],"\n")
 print(df['TotalRevenue'].describe(),"\n")                               # Check descriptive statistics for revenue
 
