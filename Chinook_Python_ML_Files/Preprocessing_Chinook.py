@@ -30,6 +30,7 @@ print(df[['Employee_HireDate', 'Tenure']].head(),"\n")                  # Displa
 print(df.groupby('Employee_Age')['TotalInvoices'].median(),"\n")
 print(df.groupby('Sex')['TotalRevenue'].median(),"\n")
 df['TotalRevenue'] = df['TotalRevenue'].fillna(df.groupby('Sex')['TotalRevenue'].transform('min'))
+df['AvgRevenue'] = df['AvgRevenue'].fillna(df.groupby('Sex')['AvgRevenue'].transform('min'))
 print(df['TotalRevenue'],"\n")
 print(df['TotalRevenue'].describe(),"\n")                               # Check descriptive statistics for revenue
 
@@ -50,25 +51,25 @@ print(df['TotalRevenue'].describe(),"\n")                               # Check 
 
 
 
-# bin_edges = 1                                                        # Initialize bin_edges to avoid NameError
-# try:
-#     df['PerformanceCategory'] = pd.qcut(                                # Attempt to categorize using quantiles
-#     df['TotalRevenue'],
-#     q=3,                                                                # Quartiles (3 categories)
-#     labels=['Low Performer', 'Average Performer', 'High Performer'],
-#     duplicates='drop',                                                   # Handle duplicate edges
-#     retbins=True                                                         # Return bin edges for inspection
-#     )
-#     df['PerformanceCategory'], bin_edges = bins                         # Assign categories and get bin edges
-#     print(f"Bin edges: {bin_edges}\n")
-# except ValueError as e:
-#     print(f"An error occurred: {e}")
-#
-#
-# if len(bin_edges) - 1 != len(['Low Performer', 'Average Performer', 'High Performer']):     # Dynamically adjust labels if bins are reduced
-#     num_bins = len(bin_edges) - 1
-#     labels = [f'Category {i+1}' for i in range(num_bins)]  # Adjust labels dynamically
-#     df['PerformanceCategory'] = pd.qcut(df['TotalRevenue'], q=num_bins, labels=labels)
+bin_edges = 1                                                        # Initialize bin_edges to avoid NameError
+try:
+    df['PerformanceCategory'] = pd.qcut(                                # Attempt to categorize using quantiles
+    df['TotalRevenue'],
+    q=3,                                                                # Quartiles (3 categories)
+    labels=['Low Performer', 'Average Performer', 'High Performer'],
+    duplicates='drop',                                                   # Handle duplicate edges
+    retbins=True                                                         # Return bin edges for inspection
+    )
+    df['PerformanceCategory'], bin_edges = bins                         # Assign categories and get bin edges
+    print(f"Bin edges: {bin_edges}\n")
+except ValueError as e:
+    print(f"An error occurred: {e}")
+
+
+if len(bin_edges) - 1 != len(['Low Performer', 'Average Performer', 'High Performer']):     # Dynamically adjust labels if bins are reduced
+    num_bins = len(bin_edges) - 1
+    labels = [f'Category {i+1}' for i in range(num_bins)]  # Adjust labels dynamically
+    df['PerformanceCategory'] = pd.qcut(df['TotalRevenue'], q=num_bins, labels=labels)
 
 
 
