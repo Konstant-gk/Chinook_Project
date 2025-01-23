@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as snb
+import seaborn as sns
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import LabelEncoder
@@ -106,88 +107,35 @@ evaluate_model("Random Forest", y_test, y_pred_rf)
 # Evaluate Decision Tree
 evaluate_model("Decision Tree", y_test, y_pred_dt)
 
+# Perform Grid Search for Random Forest
+param_grid = {'n_estimators': [50, 100, 200]}
+grid = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, cv=5)
+grid.fit(X_train, y_train)
 
+# Display the best parameters from GridSearchCV
+print("Best Parameters from GridSearchCV:", grid.best_params_)
 
+# Evaluate the best estimator
+best_rf = grid.best_estimator_
+y_pred_best_rf = best_rf.predict(X_test)
 
+evaluate_model("Optimized Random Forest", y_test, y_pred_best_rf)
 
+# Feature importance of the best Random Forest model
+importance = best_rf.feature_importances_
+for feature, imp in zip(X.columns, importance):
+    print(f"{feature}: {imp:.4f}")
 
+# Plot feature importance
+sns.barplot(x=importance, y=X.columns)
+plt.title('Feature Importance (Optimized Random Forest)')
+plt.xlabel('Importance')
+plt.ylabel('Features')
+plt.show()
 
-
-# bin_edges = 1                                                        # Initialize bin_edges to avoid NameError
-# try:
-#     df['PerformanceCategory'] = pd.qcut(                                # Attempt to categorize using quantiles
-#     df['TotalRevenue'],
-#     q=3,                                                                # Quartiles (3 categories)
-#     labels=['Low Performer', 'Average Performer', 'High Performer'],
-#     duplicates='drop',                                                   # Handle duplicate edges
-#     retbins=True                                                         # Return bin edges for inspection
-#     )
-#     df['PerformanceCategory'], bin_edges = bins                         # Assign categories and get bin edges
-#     print(f"Bin edges: {bin_edges}\n")
-# except ValueError as e:
-#     print(f"An error occurred: {e}")
-#
-#
-# if len(bin_edges) - 1 != len(['Low Performer', 'Average Performer', 'High Performer']):     # Dynamically adjust labels if bins are reduced
-#     num_bins = len(bin_edges) - 1
-#     labels = [f'Category {i+1}' for i in range(num_bins)]  # Adjust labels dynamically
-#     df['PerformanceCategory'] = pd.qcut(df['TotalRevenue'], q=num_bins, labels=labels)
-#
-
-
-# df['PerformanceCategory'] = pd.qcut(
-#     df['TotalRevenue'],
-#     q=[0, 0.33, 0.66, 1],
-#     labels=['Low Performer', 'Average Performer', 'High Performer']
-# )
-#
-#
-# X = df[['TotalInvoices', 'TotalRevenue', 'AvgRevenuePerCustomer', 'Tenure']]
-# y = df['PerformanceCategory']
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-#
-# print("\n")
-#
-# models = {
-#     'Random Forest': RandomForestClassifier(),
-#     'Decision Tree': DecisionTreeClassifier(),
-#     'SVM': SVC(),
-#     'Logistic Regression': LogisticRegression()
-# }
-#
-# print("\n")
-#
-# for name, model in models.items():
-#     model.fit(X_train, y_train)
-#     predictions = model.predict(X_test)
-#     print(f"{name}: {accuracy_score(y_test, predictions)}")
-#
-# print("\n")
-#
-#
-# for name, model in models.items():
-#     scores = cross_val_score(model, X, y, cv=5)
-#     print(f"{name}: {scores.mean():.4f}")
-#
-#
-# print("\n")
-#
-#
-# param_grid = {'n_estimators': [50, 100, 200]}
-# grid = GridSearchCV(RandomForestClassifier(), param_grid, cv=5)
-# grid.fit(X_train, y_train)
-# print(grid.best_params_)
-#
-# importance = grid.best_estimator_.feature_importances_
-# for feature, importance in zip(X.columns, importance):
-#     print(f"{feature}: {importance:.4f}")
-#
-# print("\n")
-#
-#
-# sns.barplot(x=importance, y=X.columns)
-# plt.title('Feature Importance')
-# plt.show()
-
-
-
+# Cross-validation for both models
+models = {"Random Forest": random_forest, "Decision Tree": decision_tree}
+print("\nCross-validation Scores:")
+for name, model in models.items():
+    scores = cross_val_score(model, X, y, cv=5)
+    print(f"{name}: {scores.mean():.4f}")
