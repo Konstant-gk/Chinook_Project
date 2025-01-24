@@ -2,17 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 
 # Load the data
 df = pd.read_csv('Chinook_Employee_Joins_Aggregated_Nums.csv')
@@ -106,36 +102,36 @@ evaluate_model("Random Forest", y_test, y_pred_rf)
 
 # Evaluate Decision Tree
 evaluate_model("Decision Tree", y_test, y_pred_dt)
-
-# Perform Grid Search for Random Forest
-param_grid = {'n_estimators': [50, 100, 200]}
-grid = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, cv=5)
-grid.fit(X_train, y_train)
-
-# Display the best parameters from GridSearchCV
-print("Best Parameters from GridSearchCV:", grid.best_params_)
-
-# Evaluate the best estimator
-best_rf = grid.best_estimator_
-y_pred_best_rf = best_rf.predict(X_test)
-
-evaluate_model("Optimized Random Forest", y_test, y_pred_best_rf)
-
-# Feature importance of the best Random Forest model
-importance = best_rf.feature_importances_
-for feature, imp in zip(X.columns, importance):
-    print(f"{feature}: {imp:.4f}")
-
-# Plot feature importance
-sns.barplot(x=importance, y=X.columns)
-plt.title('Feature Importance (Optimized Random Forest)')
-plt.xlabel('Importance')
-plt.ylabel('Features')
-plt.show()
-
-# Cross-validation for both models
-models = {"Random Forest": random_forest, "Decision Tree": decision_tree}
-print("\nCross-validation Scores:")
-for name, model in models.items():
-    scores = cross_val_score(model, X, y, cv=5)
-    print(f"{name}: {scores.mean():.4f}")
+#
+# # Perform Grid Search for Random Forest
+# param_grid = {'n_estimators': [50, 100, 200]}
+# grid = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, cv=5)
+# grid.fit(X_train, y_train)
+#
+# # Display the best parameters from GridSearchCV
+# print("Best Parameters from GridSearchCV:", grid.best_params_)
+#
+# # Evaluate the best estimator
+# best_rf = grid.best_estimator_
+# y_pred_best_rf = best_rf.predict(X_test)
+#
+# evaluate_model("Optimized Random Forest", y_test, y_pred_best_rf)
+#
+# # Feature importance of the best Random Forest model
+# importance = best_rf.feature_importances_
+# for feature, imp in zip(X.columns, importance):
+#     print(f"{feature}: {imp:.4f}")
+#
+# # Plot feature importance
+# sns.barplot(x=importance, y=X.columns)
+# plt.title('Feature Importance (Optimized Random Forest)')
+# plt.xlabel('Importance')
+# plt.ylabel('Features')
+# plt.show()
+#
+# # Cross-validation for both models
+# models = {"Random Forest": random_forest, "Decision Tree": decision_tree}
+# print("\nCross-validation Scores:")
+# for name, model in models.items():
+#     scores = cross_val_score(model, X, y, cv=5)
+#     print(f"{name}: {scores.mean():.4f}")
