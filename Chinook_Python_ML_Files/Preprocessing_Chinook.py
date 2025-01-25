@@ -51,6 +51,7 @@ df_final = df2[~df2['EmployeeId'].isin([3, 4, 5])]
 features = ['EmployeeId', 'Employee_Role', 'Sex', 'Employee_BirthDate', 'Employee_Age', 'Employee_HireDate', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
 df_final = df[features]
+pd.get_dummies(df_final['Sex'],"\n")
 
 # Display the first few rows of the filtered DataFrame
 print(df_final.head())
@@ -84,7 +85,6 @@ models = {
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 best_estimators = {}
-accuracy_scores = {}
 
 for model_name, (model, param_grid) in models.items():
     print(f"Performing GridSearchCV for {model_name}...")
@@ -99,8 +99,24 @@ X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, s
 
 # Train and Evaluate Models
 for model_name, model in best_estimators.items():
+    print(f"\nEvaluating {model_name}...")
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
+
+# Metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, average='weighted')
+    recall = recall_score(y_test, y_pred, average='weighted')
+    f1 = f1_score(y_test, y_pred, average='weighted')
+
+# Print metrics
+    print("\n"f"Accuracy: {accuracy:.3f}")
+    print(f"Precision: {precision:.3f}")
+    print(f"Recall: {recall:.3f}")
+    print(f"F1 Score: {f1:.3f}")
+
+
+
     accuracy = accuracy_score(y_test, y_pred)
     accuracy_scores[model_name] = accuracy
     print(f"{model_name} Accuracy: {accuracy:.3f}")
@@ -116,20 +132,6 @@ for model_name, accuracy in accuracy_scores.items():
 
 
 
-
-# Initialize models
-random_forest = RandomForestClassifier(random_state=42)
-decision_tree = DecisionTreeClassifier(random_state=42)
-
-# Train models
-random_forest.fit(X_train, y_train)
-decision_tree.fit(X_train, y_train)
-
-# Make predictions
-y_pred_rf = random_forest.predict(X_test)
-y_pred_dt= decision_tree.predict(X_test)
-print(y_pred_rf)
-print(y_pred_dt)
 
 # Evaluate models
 def evaluate_model(name, y_test, y_pred):
@@ -157,6 +159,3 @@ evaluate_model("Random Forest", y_test, y_pred_rf)
 
 # Evaluate Decision Tree
 evaluate_model("Decision Tree", y_test, y_pred_dt)
-
-pd.get_dummies(df_final['Sex'],"\n")
-pd.get_dummies(df_final)
