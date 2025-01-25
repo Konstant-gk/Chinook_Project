@@ -15,9 +15,7 @@ from sklearn.tree import DecisionTreeClassifier
 df = pd.read_csv('Chinook_Employee_Joins_Aggregated_Nums.csv')
 
 # Inspect data
-print(df.head(), "\n")
 print(df.columns, "\n")
-
 
 # Convert 'Employee_HireDate' to a datetime object
 df['Employee_HireDate'] = pd.to_datetime(df['Employee_HireDate'])
@@ -26,10 +24,8 @@ df['Employee_HireDate'] = pd.to_datetime(df['Employee_HireDate'])
 current_date = pd.Timestamp.now()
 df['Tenure'] = (current_date - df['Employee_HireDate']).dt.days / 365
 
-
 # Format AvgRevenue to 2 decimal places
 df['AvgRevenue'] = df['AvgRevenue'].round(2)
-
 
 # Fill any remaining NaN values with 0
 df[['TotalRevenue', 'AvgRevenue', 'ReportsTo']] = df[['TotalRevenue', 'AvgRevenue', 'ReportsTo']].fillna(0)
@@ -47,21 +43,14 @@ df[['Tenure', 'ReportsTo']] = df[['Tenure', 'ReportsTo']].round().astype(int)
 # Print the sorted column
 # print(sorted_total_invoices)
 
-print(df.head(), "\n")
+# Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
+df2 = df[df['Employee_Role'] == 'Sales Support Agent']
+df_final = df2[~df2['EmployeeId'].isin([3, 4, 5])]
 
 # Create a new DataFrame with only the required features
 features = ['EmployeeId', 'Employee_Role', 'Sex', 'Employee_BirthDate', 'Employee_Age', 'Employee_HireDate', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
-
-df_filtered = df[features]
-
-# Display the first few rows of the new DataFrame
-print(df_filtered.head())
-
-# Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
-df_filtered2 = df_filtered[df_filtered['Employee_Role'] == 'Sales Support Agent']
-df_final = df_filtered2[~df_filtered2['EmployeeId'].isin([3, 4, 5])]
-
+df_final = df[features]
 
 # Display the first few rows of the filtered DataFrame
 print(df_final.head())
@@ -76,10 +65,6 @@ label_mapping = {'Low Performer': 0, 'Average Performer': 1, 'High Performer': 2
 # Map labels to numbers
 df_final['Performance_Label_Encoded'] = df_final['Performance_Label'].map(label_mapping)
 
-# Display the first few rows of the filtered DataFrame with the new labels
-print(df_final[['EmployeeId', 'TotalRevenue', 'Performance_Label']].head(), "\n")
-
-
 # Define X (features) and y (target)
 X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'AnnualRevenue']]
 y = df_final['Performance_Label_Encoded']
@@ -88,8 +73,48 @@ y = df_final['Performance_Label_Encoded']
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Split data into training (80%) and test (20%) sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Stratified K-Fold Cross-Validation with GridSearchCV
+models = {
+    "SVM": (SVC(random_state=42), {'C': [0.1, 1, 10], 'kernel': ['linear', 'rbf']}),
+    "Logistic Regression": (LogisticRegression(random_state=42), {'C': [0.1, 1, 10]}),
+    "Decision Tree": (DecisionTreeClassifier(random_state=42), {'max_depth': [None, 10, 20]}),
+    "Random Forest": (RandomForestClassifier(random_state=42), {'n_estimators': [50, 100, 200]}),
+    "KNN": (KNeighborsClassifier(), {'n_neighbors': [3, 5, 7]})
+}
+
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+best_estimators = {}
+accuracy_scores = {}
+
+for model_name, (model, param_grid) in models.items():
+    print(f"Performing GridSearchCV for {model_name}...")
+    grid_search = GridSearchCV(model, param_grid, scoring='accuracy', cv=skf, n_jobs=-1)
+    grid_search.fit(X_scaled, y)
+    best_estimators[model_name] = grid_search.best_estimator_
+    print(f"Best parameters for {model_name}: {grid_search.best_params_}")
+
+# Train-Test-Validation Split (80%-10%-10%)
+X_train, X_temp, y_train, y_temp = train_test_split(X_scaled, y, test_size=0.2, stratify=y, random_state=42)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, stratify=y_temp, random_state=42)
+
+# Train and Evaluate Models
+for model_name, model in best_estimators.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    accuracy_scores[model_name] = accuracy
+    print(f"{model_name} Accuracy: {accuracy:.3f}")
+
+# Print Overall Results
+print("\nFinal Model Performance:")
+for model_name, accuracy in accuracy_scores.items():
+    print(f"{model_name}: {accuracy:.3f}")
+
+
+
+
+
+
 
 
 # Initialize models
