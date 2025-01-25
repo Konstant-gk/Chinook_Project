@@ -13,7 +13,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 import warnings
 
-
 # Load the data
 df = pd.read_csv('Chinook_Employee_Joins_Aggregated_Nums.csv')
 
