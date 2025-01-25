@@ -36,13 +36,6 @@ df['AnnualRevenue'] = (df['TotalRevenue'] / df['Tenure']).round(2)
 # Round tenure to the nearest integer
 df[['Tenure', 'ReportsTo']] = df[['Tenure', 'ReportsTo']].round().astype(int)
 
-# Ensure all rows are displayed
-# pd.set_option('display.max_rows', None)
-# Sort 'TotalInvoices' in ascending order
-# sorted_total_invoices = df['TotalInvoices'].sort_values(ascending=True)
-# Print the sorted column
-# print(sorted_total_invoices)
-
 # Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
 df2 = df[df['Employee_Role'] == 'Sales Support Agent']
 df_final = df2[~df2['EmployeeId'].isin([3, 4, 5])]
@@ -70,7 +63,7 @@ df_final['Performance_Label_Encoded'] = df_final['Performance_Label'].map(label_
 X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'AnnualRevenue']]
 y = df_final['Performance_Label_Encoded']
 
-# Normalize/standardize the features using StandardScaler
+# Normalize the features using StandardScaler
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
@@ -104,58 +97,38 @@ for model_name, model in best_estimators.items():
     y_pred = model.predict(X_test)
 
 # Metrics
-    accuracy = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred, average='weighted')
-    recall = recall_score(y_test, y_pred, average='weighted')
-    f1 = f1_score(y_test, y_pred, average='weighted')
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average='weighted')
+recall = recall_score(y_test, y_pred, average='weighted')
+f1 = f1_score(y_test, y_pred, average='weighted')
 
 # Print metrics
-    print("\n"f"Accuracy: {accuracy:.3f}")
-    print(f"Precision: {precision:.3f}")
-    print(f"Recall: {recall:.3f}")
-    print(f"F1 Score: {f1:.3f}")
+print("\n"f"Accuracy: {accuracy:.3f}")
+print(f"Precision: {precision:.3f}")
+print(f"Recall: {recall:.3f}")
+print(f"F1 Score: {f1:.3f}")
 
+# Classification Report
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
 
+# Confusion Matrix
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6, 4))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=quantile_labels, yticklabels=quantile_labels)
+plt.title(f"Confusion Matrix for {model_name}")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
 
-    accuracy = accuracy_score(y_test, y_pred)
-    accuracy_scores[model_name] = accuracy
-    print(f"{model_name} Accuracy: {accuracy:.3f}")
-
-# Print Overall Results
-print("\nFinal Model Performance:")
-for model_name, accuracy in accuracy_scores.items():
-    print(f"{model_name}: {accuracy:.3f}")
-
-
-
-
-
-
-
-
-# Evaluate models
-def evaluate_model(name, y_test, y_pred):
-    accuracy = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred, average='weighted')
-    recall = recall_score(y_test, y_pred, average='weighted')
-    f1 = f1_score(y_test, y_pred, average='weighted')
-    print(f"{name} Model Metrics:")
-    print(f"Accuracy: {accuracy:.2f}")
-    print(f"Precision: {precision:.2f}")
-    print(f"Recall: {recall:.2f}")
-    print(f"F1 Score: {f1:.2f}")
-    print()
-
-    # Confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=quantile_labels, yticklabels=quantile_labels)
-    plt.title(f"{name} Confusion Matrix")
-    plt.xlabel("Predicted Labels")
-    plt.ylabel("True Labels")
+# Feature Importance (for tree-based models)
+if hasattr(model, "feature_importances_"):
+    feature_importances = model.feature_importances_
+    plt.figure(figsize=(8, 6))
+    sns.barplot(x=feature_importances, y=X.columns)
+    plt.title(f"Feature Importance for {model_name}")
+    plt.xlabel("Importance")
+    plt.ylabel("Feature")
     plt.show()
 
-# Evaluate Random Forest
-evaluate_model("Random Forest", y_test, y_pred_rf)
 
-# Evaluate Decision Tree
-evaluate_model("Decision Tree", y_test, y_pred_dt)
