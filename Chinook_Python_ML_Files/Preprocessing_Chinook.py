@@ -4,8 +4,8 @@ import pandas as pd
 import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
+from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -40,17 +40,20 @@ df['AnnualRevenue'] = (df['TotalRevenue'] / df['Tenure']).round(2)
 df[['Tenure', 'ReportsTo']] = df[['Tenure', 'ReportsTo']].round().astype(int)
 
 # Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
-df[df['Employee_Role'] == 'Sales Support Agent']
-df[~df['EmployeeId'].isin([3, 4, 5])]
+df2 = df[df['Employee_Role'] == 'Sales Support Agent']
+df2[~df2['EmployeeId'].isin([3, 4, 5])]
 
 # Create a new DataFrame with only the required features
 features = ['EmployeeId', 'Employee_Role', 'Sex', 'Employee_Age', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
-df_final = df[features]
 
+df_final = df2[features]
+
+# Ensure df_final is a proper copy of the DataFrame
+print(df_final['TotalRevenue'].value_counts())
+df_final = df_final.copy()
 
 # Define performance labels based on quantiles of 'TotalRevenue'
-print(df_final['TotalRevenue'].value_counts())
 quantile_labels = ['Low Performer', 'Average Performer', 'High Performer']
 df_final['Performance_Label'] = pd.qcut(df_final['TotalRevenue'], q=3, labels=quantile_labels, duplicates='drop')
 
@@ -59,6 +62,9 @@ label_mapping = {'Low Performer': 0, 'Average Performer': 1, 'High Performer': 2
 
 # Map labels to numbers
 df_final['Performance_Label_Encoded'] = df_final['Performance_Label'].map(label_mapping)
+
+# Display the first few rows of the filtered DataFrame
+print(df_final.head())
 
 # Define X (features) and y (target)
 X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'AnnualRevenue']]
