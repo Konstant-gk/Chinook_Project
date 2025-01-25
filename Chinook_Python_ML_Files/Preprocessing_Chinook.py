@@ -10,6 +10,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+import warnings
+
 
 # Load the data
 df = pd.read_csv('Chinook_Employee_Joins_Aggregated_Nums.csv')
@@ -37,21 +40,19 @@ df['AnnualRevenue'] = (df['TotalRevenue'] / df['Tenure']).round(2)
 df[['Tenure', 'ReportsTo']] = df[['Tenure', 'ReportsTo']].round().astype(int)
 
 # Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
-df2 = df[df['Employee_Role'] == 'Sales Support Agent']
-df_final = df2[~df2['EmployeeId'].isin([3, 4, 5])]
+df[df['Employee_Role'] == 'Sales Support Agent']
+df[~df['EmployeeId'].isin([3, 4, 5])]
 
 # Create a new DataFrame with only the required features
-features = ['EmployeeId', 'Employee_Role', 'Sex', 'Employee_BirthDate', 'Employee_Age', 'Employee_HireDate', 'Tenure',
+features = ['EmployeeId', 'Employee_Role', 'Sex', 'Employee_Age', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
 df_final = df[features]
-pd.get_dummies(df_final['Sex'],"\n")
 
-# Display the first few rows of the filtered DataFrame
-print(df_final.head())
 
 # Define performance labels based on quantiles of 'TotalRevenue'
+print(df_final['TotalRevenue'].value_counts())
 quantile_labels = ['Low Performer', 'Average Performer', 'High Performer']
-df_final.loc[:,'Performance_Label'] = pd.qcut(df_final['TotalRevenue'], q=3, labels=quantile_labels)
+df_final['Performance_Label'] = pd.qcut(df_final['TotalRevenue'], q=3, labels=quantile_labels, duplicates='drop')
 
 # Create a dictionary to map labels to desired numbers
 label_mapping = {'Low Performer': 0, 'Average Performer': 1, 'High Performer': 2}
