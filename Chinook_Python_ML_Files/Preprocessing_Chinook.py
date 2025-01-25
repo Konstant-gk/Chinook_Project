@@ -47,11 +47,11 @@ df3 = df2[~df2['EmployeeId'].isin([3, 4, 5])]
 features = ['EmployeeId', 'Employee_Role', 'Sex', 'Employee_Age', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
 
-df_final = df3[features]
+df4 = df3[features]
 
 # Ensure df_final is a proper copy of the DataFrame
-print(df_final['TotalRevenue'].value_counts())
-df_final = df_final.copy()
+print(df4['TotalRevenue'].value_counts())
+df_final = df4.copy()
 
 # Define performance labels based on quantiles of 'TotalRevenue'
 quantile_labels = ['Low Performer', 'Average Performer', 'High Performer']
@@ -67,7 +67,7 @@ df_final['Performance_Label_Encoded'] = df_final['Performance_Label'].map(label_
 print(df_final.head())
 
 # Define X (features) and y (target)
-X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue']]
+X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'AnnualRevenue']]
 y = df_final['Performance_Label_Encoded']
 
 # Normalize the features using StandardScaler
