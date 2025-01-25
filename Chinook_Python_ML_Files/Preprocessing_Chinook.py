@@ -41,13 +41,13 @@ df[['Tenure', 'ReportsTo']] = df[['Tenure', 'ReportsTo']].round().astype(int)
 
 # Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
 df2 = df[df['Employee_Role'] == 'Sales Support Agent']
-df2[~df2['EmployeeId'].isin([3, 4, 5])]
+df3 = df2[~df2['EmployeeId'].isin([3, 4, 5])]
 
 # Create a new DataFrame with only the required features
 features = ['EmployeeId', 'Employee_Role', 'Sex', 'Employee_Age', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
 
-df_final = df2[features]
+df_final = df3[features]
 
 # Ensure df_final is a proper copy of the DataFrame
 print(df_final['TotalRevenue'].value_counts())
@@ -67,7 +67,7 @@ df_final['Performance_Label_Encoded'] = df_final['Performance_Label'].map(label_
 print(df_final.head())
 
 # Define X (features) and y (target)
-X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'AnnualRevenue']]
+X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue']]
 y = df_final['Performance_Label_Encoded']
 
 # Normalize the features using StandardScaler
