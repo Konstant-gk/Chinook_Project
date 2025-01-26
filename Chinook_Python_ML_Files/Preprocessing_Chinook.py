@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
+from sklearn.metrics import classification_report, roc_curve, accuracy_score, confusion_matrix, f1_score, precision_score, recall_score, precision_recall_curve
 from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV, learning_curve
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.svm import SVC
@@ -39,11 +39,11 @@ df['AnnualRevenue'] = (df['TotalRevenue'] / df['Tenure']).round(2)
 df[['Tenure', 'ReportsTo']] = df[['Tenure', 'ReportsTo']].round().astype(int)
 
 # Create a boxplot for 'TotalRevenue'
-# plt.figure(figsize=(10, 6))
-# sns.boxplot(x=df['TotalRevenue'])
-# plt.title('Boxplot of Employees')
-# plt.xlabel('TotalRevenue')
-# plt.show()
+plt.figure(figsize=(10, 6))
+sns.boxplot(x=df['TotalRevenue'])
+plt.title('Boxplot of Employees')
+plt.xlabel('TotalRevenue')
+plt.show()
 
 # Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
 df2 = df[df['Employee_Role'] == 'Sales Support Agent']
@@ -52,14 +52,12 @@ df3 = df2[~df2['EmployeeId'].isin([3, 4, 5])]
 features = ['EmployeeId', 'Employee_Age', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
 
-# plt.figure(figsize=(10, 8))
-# sns.heatmap(df3[features].corr(), annot=True, cmap="coolwarm")
-# plt.title("Correlation Heatmap")
-# plt.show()
+plt.figure(figsize=(10, 8))
+sns.heatmap(df3[features].corr(), annot=True, cmap="coolwarm")
+plt.title("Correlation Heatmap")
+plt.show()
 
 # Create a new DataFrame with only the required features
-
-
 df4 = df3[features]
 
 # Ensure df_final is a proper copy of the DataFrame
@@ -113,14 +111,14 @@ X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, s
 # Get value counts of 'Performance_Label_Encoded'
 value_counts = df_final['Performance_Label_Encoded'].value_counts()
 
-# # Create a bar plot
-# plt.figure(figsize=(8, 6))
-# value_counts.plot(kind='bar')
-# plt.title('Distribution of Performance Label Encoded')
-# plt.xlabel('Performance Label Encoded')
-# plt.ylabel('Count')
-# plt.xticks(rotation=0)
-# plt.show()
+# Create a bar plot
+plt.figure(figsize=(8, 6))
+value_counts.plot(kind='bar')
+plt.title('Distribution of Performance Label Encoded')
+plt.xlabel('Performance Label Encoded')
+plt.ylabel('Count')
+plt.xticks(rotation=0)
+plt.show()
 
 # Train and Evaluate Models and perform confusion matrix
 for model_name, model in best_estimators.items():
@@ -162,17 +160,30 @@ for model_name, model in best_estimators.items():
         plt.show()
 
 
+    if hasattr(model, "predict_proba"):  # Ensure model supports probability predictions
+        y_pred_proba = model.predict_proba(X_test)
+        precision, recall, _ = precision_recall_curve(y_test, y_pred_proba[:, 1], pos_label=2)
 
-for model_name, model in best_estimators.items():
-    train_sizes, train_scores, test_scores = learning_curve(model, X_scaled, y, cv=5, scoring='accuracy')
-    plt.figure(figsize=(8, 6))
-    plt.plot(train_sizes, train_scores.mean(axis=1), label="Training Score")
-    plt.plot(train_sizes, test_scores.mean(axis=1), label="Validation Score")
-    plt.title(f"Learning Curve for {model_name}")
-    plt.xlabel("Training Size")
-    plt.ylabel("Accuracy")
-    plt.legend(loc="best")
-    plt.show()
+        plt.figure(figsize=(8, 6))
+        plt.plot(recall, precision, label=f"{model_name}")
+        plt.title(f"Precision-Recall Curve for {model_name}")
+        plt.xlabel("Recall")
+        plt.ylabel("Precision")
+        plt.legend(loc="upper right")
+        plt.show()
+
+
+
+# for model_name, model in best_estimators.items():
+#     train_sizes, train_scores, test_scores = learning_curve(model, X_scaled, y, cv=5, scoring='accuracy')
+#     plt.figure(figsize=(8, 6))
+#     plt.plot(train_sizes, train_scores.mean(axis=1), label="Training Score")
+#     plt.plot(train_sizes, test_scores.mean(axis=1), label="Validation Score")
+#     plt.title(f"Learning Curve for {model_name}")
+#     plt.xlabel("Training Size")
+#     plt.ylabel("Accuracy")
+#     plt.legend(loc="best")
+#     plt.show()
 
 
 sns.pairplot(df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'Performance_Label_Encoded', 'Performance_Label']], hue="Performance_Label", diag_kind="kde", palette="viridis")
