@@ -39,11 +39,11 @@ df['AnnualRevenue'] = (df['TotalRevenue'] / df['Tenure']).round(2)
 df[['Tenure', 'ReportsTo']] = df[['Tenure', 'ReportsTo']].round().astype(int)
 
 # Create a boxplot for 'TotalRevenue'
-plt.figure(figsize=(10, 6))
-sns.boxplot(x=df['TotalRevenue'])
-plt.title('Boxplot of Employees')
-plt.xlabel('TotalRevenue')
-plt.show()
+# plt.figure(figsize=(10, 6))
+# sns.boxplot(x=df['TotalRevenue'])
+# plt.title('Boxplot of Employees')
+# plt.xlabel('TotalRevenue')
+# plt.show()
 
 # Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
 df2 = df[df['Employee_Role'] == 'Sales Support Agent']
@@ -52,10 +52,10 @@ df3 = df2[~df2['EmployeeId'].isin([3, 4, 5])]
 features = ['EmployeeId', 'Employee_Age', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
 
-plt.figure(figsize=(10, 8))
-sns.heatmap(df3[features].corr(), annot=True, cmap="coolwarm")
-plt.title("Correlation Heatmap")
-plt.show()
+# plt.figure(figsize=(10, 8))
+# sns.heatmap(df3[features].corr(), annot=True, cmap="coolwarm")
+# plt.title("Correlation Heatmap")
+# plt.show()
 
 # Create a new DataFrame with only the required features
 df4 = df3[features]
@@ -85,6 +85,16 @@ y = df_final['Performance_Label_Encoded']
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
+# Create a new DataFrame with the normalized data
+X_scaled_df = pd.DataFrame(X_scaled, columns=X.columns)
+
+# Optionally, join this DataFrame back to the original or show it separately
+print(X_scaled_df)
+
+X_scaled_df.hist(figsize=(12, 8), bins=20, grid=False)
+plt.suptitle('Histogram of Normalized Features')
+plt.show()
+
 # Stratified K-Fold Cross-Validation with GridSearchCV
 models = {
     "SVM": (SVC(random_state=42), {'C': [0.1, 1, 10], 'kernel': ['linear', 'rbf']}),
@@ -111,14 +121,35 @@ X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, s
 # Get value counts of 'Performance_Label_Encoded'
 value_counts = df_final['Performance_Label_Encoded'].value_counts()
 
-# Create a bar plot
-plt.figure(figsize=(8, 6))
-value_counts.plot(kind='bar')
-plt.title('Distribution of Performance Label Encoded')
-plt.xlabel('Performance Label Encoded')
-plt.ylabel('Count')
-plt.xticks(rotation=0)
+# Extract model names and hyperparameters
+model_names = list(models.keys())
+hyperparameters = [", ".join(f"{k}={v}" for k, v in params.items()) for _, params in models.values()]
+
+# Plot model initialization
+plt.figure(figsize=(10, 6))
+plt.barh(model_names, [len(params) for _, params in models.values()], color='skyblue')
+plt.title('Models and Number of Hyperparameters')
+plt.xlabel('Number of Hyperparameters')
+plt.ylabel('Model')
 plt.show()
+
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(data=pd.DataFrame(X_train, columns=X.columns))
+plt.title('Boxplot of Normalized Training Features')
+plt.xlabel('Features')
+plt.ylabel('Normalized Values')
+plt.xticks(rotation=45)
+plt.show()
+
+# # Create a bar plot
+# plt.figure(figsize=(8, 6))
+# value_counts.plot(kind='bar')
+# plt.title('Distribution of Performance Label Encoded')
+# plt.xlabel('Performance Label Encoded')
+# plt.ylabel('Count')
+# plt.xticks(rotation=0)
+# plt.show()
 
 # Train and Evaluate Models and perform confusion matrix
 for model_name, model in best_estimators.items():
@@ -187,7 +218,7 @@ for model_name, model in best_estimators.items():
 
 
 sns.pairplot(df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'Performance_Label_Encoded', 'Performance_Label']], hue="Performance_Label", diag_kind="kde", palette="viridis")
-plt.title("Feature Pair Plot by Performance Label")
+plt.title("")
 plt.show()
 
 
