@@ -1,3 +1,4 @@
+from urllib.request import HTTPBasicAuthHandler
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -11,11 +12,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-import warnings
+
 
 
 # Load the data
-df = pd.read_csv('Chinook_Employee_Joins_Aggregated_Nums.csv')
+df = pd.read_csv("Chinook_Employee_Joins_Aggregated_Nums.csv")
 
 # Inspect data
 print(df.columns, "\n")
@@ -67,7 +68,7 @@ df_final['Performance_Label_Encoded'] = df_final['Performance_Label'].map(label_
 print(df_final.head())
 
 # Define X (features) and y (target)
-X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'AnnualRevenue']]
+X = df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue']]
 y = df_final['Performance_Label_Encoded']
 
 # Normalize the features using StandardScaler
@@ -88,54 +89,63 @@ best_estimators = {}
 
 for model_name, (model, param_grid) in models.items():
     print(f"Performing GridSearchCV for {model_name}...")
-    grid_search = GridSearchCV(model, param_grid, scoring='accuracy', cv=skf, n_jobs=-1)
+    grid_search = GridSearchCV(model, param_grid, scoring='accuracy', cv=skf, n_jobs=-1, verbose=1)
     grid_search.fit(X_scaled, y)
     best_estimators[model_name] = grid_search.best_estimator_
-    print(f"Best parameters for {model_name}: {grid_search.best_params_}")
+    print(f"Best parameters for {model_name}: {grid_search.best_params_} with accuracy: {grid_search.best_score_:.3f}")
 
 # Train-Test-Validation Split (80%-10%-10%)
 X_train, X_temp, y_train, y_temp = train_test_split(X_scaled, y, test_size=0.2, stratify=y, random_state=42)
 X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, stratify=y_temp, random_state=42)
 
+results_per_model = pd.DataFrame()
 # Train and Evaluate Models
 for model_name, model in best_estimators.items():
     print(f"\nEvaluating {model_name}...")
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
 
-# Metrics
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred, average='weighted')
-recall = recall_score(y_test, y_pred, average='weighted')
-f1 = f1_score(y_test, y_pred, average='weighted')
+    # Metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, average='weighted')
+    recall = recall_score(y_test, y_pred, average='weighted')
+    f1 = f1_score(y_test, y_pred, average='weighted')
 
-# Print metrics
-print("\n"f"Accuracy: {accuracy:.3f}")
-print(f"Precision: {precision:.3f}")
-print(f"Recall: {recall:.3f}")
-print(f"F1 Score: {f1:.3f}")
+    results_per_model = pd.concat([results_per_model, pd.DataFrame({
+        "Model": [model_name],
+        "Accuracy": [accuracy],
+        "Precision": [recall],
+        "Recall": [recall],
+        "f1 score": [f1]
+    })])
 
-# Classification Report
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
+    # Print metrics
+    print("\n"f"Accuracy: {accuracy:.3f}")
+    print(f"Precision: {precision:.3f}")
+    print(f"Recall: {recall:.3f}")
+    print(f"F1 Score: {f1:.3f}")
 
-# Confusion Matrix
-cm = confusion_matrix(y_test, y_pred)
-plt.figure(figsize=(6, 4))
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=quantile_labels, yticklabels=quantile_labels)
-plt.title(f"Confusion Matrix for {model_name}")
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
-plt.show()
+    # # Classification Report
+    # print("\nClassification Report:")
+    # print(classification_report(y_test, y_pred))
 
-# Feature Importance (for tree-based models)
-if hasattr(model, "feature_importances_"):
-    feature_importances = model.feature_importances_
-    plt.figure(figsize=(8, 6))
-    sns.barplot(x=feature_importances, y=X.columns)
-    plt.title(f"Feature Importance for {model_name}")
-    plt.xlabel("Importance")
-    plt.ylabel("Feature")
+    # Confusion Matrix
+    cm = confusion_matrix(y_test, y_pred)
+    plt.figure(figsize=(6, 4))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=quantile_labels, yticklabels=quantile_labels)
+    plt.title(f"Confusion Matrix for {model_name}")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
     plt.show()
 
+    # Feature Importance (for tree-based models)
+    if hasattr(model, "feature_importances_"):
+        feature_importances = model.feature_importances_
+        plt.figure(figsize=(8, 6))
+        sns.barplot(x=feature_importances, y=X.columns)
+        plt.title(f"Feature Importance for {model_name}")
+        plt.xlabel("Importance")
+        plt.ylabel("Feature")
+        plt.show()
 
+print(results_per_model)
