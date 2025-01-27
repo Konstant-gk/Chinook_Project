@@ -30,7 +30,8 @@ df['Tenure'] = (current_date - df['Employee_HireDate']).dt.days / 365
 df['AvgRevenue'] = df['AvgRevenue'].round(2)
 
 # Fill any remaining NaN values with 0
-df[['TotalRevenue', 'AvgRevenue', 'ReportsTo']] = df[['TotalRevenue', 'AvgRevenue', 'ReportsTo']].fillna(0)
+# df[['TotalRevenue', 'AvgRevenue', 'ReportsTo']] = df[['TotalRevenue', 'AvgRevenue', 'ReportsTo']].fillna(0)
+df = df.dropna()
 
 # Calculate the total average per year (TotalRevenue / Tenure)
 df['AnnualRevenue'] = (df['TotalRevenue'] / df['Tenure']).round(2)
@@ -39,11 +40,11 @@ df['AnnualRevenue'] = (df['TotalRevenue'] / df['Tenure']).round(2)
 df[['Tenure', 'ReportsTo']] = df[['Tenure', 'ReportsTo']].round().astype(int)
 
 # Create a boxplot for 'TotalRevenue'
-# plt.figure(figsize=(10, 6))
-# sns.boxplot(x=df['TotalRevenue'])
-# plt.title('Boxplot of Employees')
-# plt.xlabel('TotalRevenue')
-# plt.show()
+plt.figure(figsize=(10, 6))
+sns.boxplot(x=df['TotalRevenue'])
+plt.title('Boxplot of Employees')
+plt.xlabel('TotalRevenue')
+plt.show()
 
 # Remove outliers where 'Employee_Role' is not 'Sales Support Agent' and employeeId is 3,4,5
 df2 = df[df['Employee_Role'] == 'Sales Support Agent']
@@ -53,9 +54,9 @@ features = ['EmployeeId', 'Employee_Age', 'Tenure',
             'TotalInvoices', 'TotalRevenue', 'AvgRevenue', 'AnnualRevenue']
 
 # plt.figure(figsize=(10, 8))
-# sns.heatmap(df3[features].corr(), annot=True, cmap="coolwarm")
-# plt.title("Correlation Heatmap")
-# plt.show()
+sns.heatmap(df3[features].corr(), annot=True, cmap="coolwarm")
+plt.title("Correlation Heatmap")
+plt.show()
 
 # Create a new DataFrame with only the required features
 df4 = df3[features]
@@ -78,7 +79,7 @@ df_final['Performance_Label_Encoded'] = df_final['Performance_Label'].map(label_
 print(df_final.head())
 
 # Define X (features) and y (target)
-X = df_final[['TotalInvoices', 'AvgRevenue', 'AnnualRevenue']]
+X = df_final[['TotalInvoices', 'AvgRevenue']]
 y = df_final['Performance_Label_Encoded']
 
 # Normalize the features using StandardScaler
@@ -127,10 +128,11 @@ hyperparameters = [", ".join(f"{k}={v}" for k, v in params.items()) for _, param
 
 # Plot model initialization
 plt.figure(figsize=(10, 6))
-plt.barh(model_names, [len(params) for _, params in models.values()], color='skyblue')
+plt.barh(model_names, [len(params) for _, params in models.values()])
 plt.title('Models and Number of Hyperparameters')
 plt.xlabel('Number of Hyperparameters')
 plt.ylabel('Model')
+plt.gca().xaxis.get_major_locator().set_params(integer=True)
 plt.show()
 
 
@@ -143,13 +145,13 @@ plt.xticks(rotation=45)
 plt.show()
 
 # # Create a bar plot
-# plt.figure(figsize=(8, 6))
-# value_counts.plot(kind='bar')
-# plt.title('Distribution of Performance Label Encoded')
-# plt.xlabel('Performance Label Encoded')
-# plt.ylabel('Count')
-# plt.xticks(rotation=0)
-# plt.show()
+plt.figure(figsize=(8, 6))
+value_counts.plot(kind='bar')
+plt.title('Distribution of Performance Label Encoded')
+plt.xlabel('Performance Label Encoded')
+plt.ylabel('Count')
+plt.xticks(rotation=0)
+plt.show()
 
 # Train and Evaluate Models and perform confusion matrix
 for model_name, model in best_estimators.items():
@@ -206,15 +208,15 @@ for model_name, model in best_estimators.items():
 
 
 # for model_name, model in best_estimators.items():
-#     train_sizes, train_scores, test_scores = learning_curve(model, X_scaled, y, cv=5, scoring='accuracy')
-#     plt.figure(figsize=(8, 6))
-#     plt.plot(train_sizes, train_scores.mean(axis=1), label="Training Score")
-#     plt.plot(train_sizes, test_scores.mean(axis=1), label="Validation Score")
-#     plt.title(f"Learning Curve for {model_name}")
-#     plt.xlabel("Training Size")
-#     plt.ylabel("Accuracy")
-#     plt.legend(loc="best")
-#     plt.show()
+    train_sizes, train_scores, test_scores = learning_curve(model, X_scaled, y, cv=5, scoring='accuracy')
+    plt.figure(figsize=(8, 6))
+    plt.plot(train_sizes, train_scores.mean(axis=1), label="Training Score")
+    plt.plot(train_sizes, test_scores.mean(axis=1), label="Validation Score")
+    plt.title(f"Learning Curve for {model_name}")
+    plt.xlabel("Training Size")
+    plt.ylabel("Accuracy")
+    plt.legend(loc="best")
+    plt.show()
 
 
 sns.pairplot(df_final[['Employee_Age', 'TotalInvoices', 'AvgRevenue', 'Performance_Label_Encoded', 'Performance_Label']], hue="Performance_Label", diag_kind="kde", palette="viridis")
