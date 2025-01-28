@@ -122,8 +122,6 @@ INSERT INTO Dim_Product_Music(
 	[Album_Title],
 	[Artist_Id],
 	[Artist_Name],
-	--[Playlist_Id],
-	--[Playlist_Name],
 	[Media_Type_Id],
 	[Media_Type_Name],
 	[Genre_Id],
@@ -139,8 +137,6 @@ SELECT
 	b.[Title],
 	c.[ArtistId],
 	c.[Name],
-	--d.[PlaylistId],
-	--e.[Name],
 	f.[MediaTypeId],
 	f.[Name],
 	g.[GenreId],
@@ -148,8 +144,6 @@ SELECT
 FROM [ChinookStaging].[dbo].[Track] a
 	INNER JOIN [ChinookStaging].[dbo].[Album] b ON a.[AlbumId] = b.[AlbumId]
 	INNER JOIN [ChinookStaging].[dbo].[Artist] c ON b.[ArtistId] = c.[ArtistId]
-	--INNER JOIN [ChinookStaging].[dbo].[Playlist_Track] d ON a.[TrackId] = d.[TrackId]
-	--INNER JOIN [ChinookStaging].[dbo].[Playlist] e ON e.[PlaylistId] = d.[PlaylistId]
 	INNER JOIN [ChinookStaging].[dbo].[Media_Type] f ON a.[MediaTypeId] = f.[MediaTypeId]
 	INNER JOIN [ChinookStaging].[dbo].[Genre] g ON a.[GenreId] = g.[GenreId];
 
